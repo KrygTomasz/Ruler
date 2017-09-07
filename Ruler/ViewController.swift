@@ -30,15 +30,11 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     @IBOutlet weak var distanceLabel: UILabel! {
         didSet {
             distanceLabel.text = ""
-            distanceLabel.layer.borderWidth = 1
-            distanceLabel.layer.borderColor = UIColor.black.cgColor
         }
     }
     @IBOutlet weak var infoLabel: UILabel! {
         didSet {
             infoLabel.text = "Wait for calibration..."
-            infoLabel.layer.borderWidth = 1
-            infoLabel.layer.borderColor = UIColor.black.cgColor
         }
     }
     
@@ -61,12 +57,18 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     
     var startPosition: SCNVector3?
     var endPosition: SCNVector3?
+    var distanceTextNode: SCNNode = SCNNode()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         // Set the view's delegate
         sceneView.delegate = self
+        sceneView.scene = SCNScene(named: "art.scnassets/MainScene.scn")!
+//        let text = sceneView.scene.rootNode.childNode(withName: "text", recursively: true)!
+        
+        distanceTextNode.scale = SCNVector3Make(0.002, 0.002, 0.002)
+        sceneView.scene.rootNode.addChildNode(distanceTextNode)
 
     }
     
@@ -123,6 +125,14 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         
         let cmDistance = start.distance(from: end) * 100
         distanceLabel.text = String(format: "%.2f cm", cmDistance)
+        
+//        let textNode = sceneView.scene.rootNode.childNode(withName: "text", recursively: true)!
+//        guard let testText = textNode.geometry as? SCNText else {
+//            return
+//        }
+        let text = SCNText(string: String(format: "%.2f cm", cmDistance), extrusionDepth: 2.0)
+        distanceTextNode.geometry = text
+        distanceTextNode.position = end
     }
     
     func resetMeasurements() {
@@ -132,6 +142,12 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     @objc func onMeasureButtonClicked() {
         
         isMeasuring = !isMeasuring
+        if !isMeasuring {
+            
+            
+            
+            
+        }
         
     }
 
