@@ -29,12 +29,13 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     }
     @IBOutlet weak var distanceLabel: UILabel! {
         didSet {
+            distanceLabel.isHidden = true
             distanceLabel.text = ""
         }
     }
     @IBOutlet weak var infoLabel: UILabel! {
         didSet {
-            infoLabel.text = "Wait for calibration..."
+            infoLabel.text = "Calibrating..."
         }
     }
     
@@ -52,6 +53,13 @@ class ViewController: UIViewController, ARSCNViewDelegate {
                 measureButton.setImage(#imageLiteral(resourceName: "playIcon"), for: .normal)
                 measureButton.tintColor = .mainGreen
             }
+        }
+    }
+    
+    var isCalibrating: Bool = true {
+        didSet {
+            infoLabel.isHidden = !isCalibrating
+            measureButton.isEnabled = !isCalibrating
         }
     }
     
@@ -101,13 +109,14 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             let centerPoint = self.view.center
             let hitResults = self.sceneView.hitTest(centerPoint, types: [.featurePoint])
             if let hitResult = hitResults.first {
-                self.infoLabel.isHidden = true
-                self.measureButton.isEnabled = true
+                self.isCalibrating = false
                 if self.isMeasuring {
                     let worldHitTransform = SCNMatrix4(hitResult.worldTransform)
                     let worldHitPosition = SCNVector3Make(worldHitTransform.m41, worldHitTransform.m42, worldHitTransform.m43)
                     self.updateDistance(using: worldHitPosition)
                 }
+            } else {
+                self.isCalibrating = true
             }
         }
     }
